@@ -6,14 +6,12 @@ or satellite receiver or modem."
 HOMEPAGE = "http://support.ntp.org"
 SECTION = "console/network"
 LICENSE = "NTP"
-LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=fea4b50c33b18c2194b4b1c9ca512670"
+LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=e877a1d567a6a58996d2b66e3e387003"
 
-INC_PR = "r6"
+DEPENDS = "libevent"
 
 SRC_URI = "http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-${PV}.tar.gz \
-           file://tickadj.c.patch \
            file://ntp-4.2.4_p6-nano.patch \
-           file://openssl-check.patch \
            file://ntpd \
            file://ntp.conf \
            file://ntpdate \
@@ -25,18 +23,32 @@ SRC_URI = "http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-${PV}.tar.g
            file://ntpd.list \
 "
 
-inherit autotools update-rc.d useradd systemd
+SRC_URI[md5sum] = "00950ca2855579541896513e78295361"
+SRC_URI[sha256sum] = "f14a39f753688252d683ff907035ffff106ba8d3db21309b742e09b5c3cd278e"
+
+inherit autotools update-rc.d useradd systemd pkgconfig
 
 # The ac_cv_header_readline_history is to stop ntpdc depending on either
 # readline or curses
-EXTRA_OECONF += "--with-net-snmp-config=no --without-ntpsnmpd ac_cv_header_readline_history_h=no --with-binsubdir=sbin"
+EXTRA_OECONF += "--with-net-snmp-config=no \
+                 --without-ntpsnmpd \
+                 ac_cv_header_readline_history_h=no \
+                 --with-yielding_select=yes \
+                 --with-locfile=redhat \
+                 --without-rpath \
+                 "
 CFLAGS_append = " -DPTYS_ARE_GETPT -DPTYS_ARE_SEARCHED"
 
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "--system --home-dir /var/lib/ntp \
+NTP_USER_HOME ?= "/var/lib/ntp"
+USERADD_PARAM_${PN} = "--system --home-dir ${NTP_USER_HOME} \
+                       --no-create-home \
                        --shell /bin/false --user-group ntp"
 
-PACKAGECONFIG ??= "cap"
+# NB: debug is default-enabled by NTP; keep it default-enabled here.
+PACKAGECONFIG ??= "cap debug refclocks openssl \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', 'ipv6', '', d)} \
+"
 PACKAGECONFIG[openssl] = "--with-openssl-libdir=${STAGING_LIBDIR} \
                           --with-openssl-incdir=${STAGING_INCDIR} \
                           --with-crypto, \
@@ -44,6 +56,10 @@ PACKAGECONFIG[openssl] = "--with-openssl-libdir=${STAGING_LIBDIR} \
                           openssl"
 PACKAGECONFIG[cap] = "--enable-linuxcaps,--disable-linuxcaps,libcap"
 PACKAGECONFIG[readline] = "--with-lineeditlibs,--without-lineeditlibs,readline"
+PACKAGECONFIG[refclocks] = "--enable-all-clocks,--disable-all-clocks,pps-tools"
+PACKAGECONFIG[debug] = "--enable-debugging,--disable-debugging"
+PACKAGECONFIG[mdns] = "ac_cv_header_dns_sd_h=yes,ac_cv_header_dns_sd_h=no,mdns"
+PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,"
 
 do_install_append() {
     install -d ${D}${sysconfdir}/init.d
@@ -51,6 +67,9 @@ do_install_append() {
     install -m 755 ${WORKDIR}/ntpd ${D}${sysconfdir}/init.d
     install -d ${D}${bindir}
     install -m 755 ${WORKDIR}/ntpdate ${D}${bindir}/ntpdate-sync
+
+    install -m 755 -d ${D}${NTP_USER_HOME}
+    chown ntp:ntp ${D}${NTP_USER_HOME}
 
     # Fix hardcoded paths in scripts
     sed -i 's!/usr/sbin/!${sbindir}/!g' ${D}${sysconfdir}/init.d/ntpd ${D}${bindir}/ntpdate-sync
@@ -60,8 +79,10 @@ do_install_append() {
     sed -i 's!^PATH=.*!PATH=${base_sbindir}:${base_bindir}:${sbindir}:${bindir}!' ${D}${bindir}/ntpdate-sync
     sed -i '1s,#!.*perl -w,#! ${bindir}/env perl,' ${D}${sbindir}/ntptrace
     sed -i '/use/i use warnings;' ${D}${sbindir}/ntptrace
-    sed -i '1s,#!.*perl -w,#! ${bindir}/env perl,' ${D}${sbindir}/ntp-wait
+    sed -i '1s,#!.*perl,#! ${bindir}/env perl,' ${D}${sbindir}/ntp-wait
     sed -i '/use/i use warnings;' ${D}${sbindir}/ntp-wait
+    sed -i '1s,#!.*perl -w,#! ${bindir}/env perl,' ${D}${sbindir}/calc_tickadj
+    sed -i '/use/i use warnings;' ${D}${sbindir}/calc_tickadj
 
     install -d ${D}/${sysconfdir}/default
     install -m 644 ${WORKDIR}/ntpdate.default ${D}${sysconfdir}/default/ntpdate
@@ -77,6 +98,9 @@ do_install_append() {
 
     install -d ${D}${systemd_unitdir}/ntp-units.d
     install -m 0644 ${WORKDIR}/ntpd.list ${D}${systemd_unitdir}/ntp-units.d/60-ntpd.list
+
+    # Remove an empty libexecdir.
+    rmdir --ignore-fail-on-non-empty ${D}${libexecdir}
 }
 
 PACKAGES += "ntpdate sntp ${PN}-tickadj ${PN}-utils"
@@ -85,6 +109,8 @@ PACKAGES += "ntpdate sntp ${PN}-tickadj ${PN}-utils"
 # ntp originally includes tickadj. It's split off for inclusion in small firmware images on platforms
 # with wonky clocks (e.g. OpenSlug)
 RDEPENDS_${PN} = "${PN}-tickadj"
+# ntpd require libgcc for execution
+RDEPENDS_${PN} += "libgcc"
 # Handle move from bin to utils package
 RPROVIDES_${PN}-utils = "${PN}-bin"
 RREPLACES_${PN}-utils = "${PN}-bin"
@@ -105,11 +131,13 @@ RCONFLICTS_ntpdate += "ntpdate-systemd"
 
 RSUGGESTS_${PN} = "iana-etc"
 
-FILES_${PN} = "${sbindir}/ntpd ${sysconfdir}/ntp.conf ${sysconfdir}/init.d/ntpd ${libdir} \
-    ${systemd_unitdir}/ntp-units.d/60-ntpd.list \
+FILES_${PN} = "${sbindir}/ntpd.ntp ${sysconfdir}/ntp.conf ${sysconfdir}/init.d/ntpd ${libdir} \
+    ${NTP_USER_HOME} \
+    ${systemd_unitdir}/ntp-units.d/60-ntpd.list ${libexecdir}\
 "
 FILES_${PN}-tickadj = "${sbindir}/tickadj"
-FILES_${PN}-utils = "${sbindir}"
+FILES_${PN}-utils = "${sbindir} ${datadir}/ntp/lib"
+RDEPENDS_${PN}-utils += "perl"
 FILES_ntpdate = "${sbindir}/ntpdate \
     ${sysconfdir}/network/if-up.d/ntpdate-sync \
     ${bindir}/ntpdate-sync \
@@ -118,6 +146,7 @@ FILES_ntpdate = "${sbindir}/ntpdate \
 "
 FILES_sntp = "${sbindir}/sntp \
               ${sysconfdir}/default/sntp \
+              ${systemd_unitdir}/system/sntp.service \
              "
 
 CONFFILES_${PN} = "${sysconfdir}/ntp.conf"
@@ -135,3 +164,9 @@ pkg_postinst_ntpdate() {
     fi
 }
 
+inherit update-alternatives
+
+ALTERNATIVE_PRIORITY = "100"
+
+ALTERNATIVE_${PN} = "ntpd"
+ALTERNATIVE_LINK_NAME[ntpd] = "${sbindir}/ntpd"
