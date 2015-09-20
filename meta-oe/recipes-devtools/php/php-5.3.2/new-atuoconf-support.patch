@@ -1,0 +1,85 @@
+From https://bugs.php.net/bug.php?id=50291
+-Khem
+
+Index: php-5.3.2/configure.in
+===================================================================
+--- php-5.3.2.orig/configure.in
++++ php-5.3.2/configure.in
+@@ -1,8 +1,6 @@
+ ## $Id: configure.in 295792 2010-03-03 16:36:07Z johannes $ -*- autoconf -*-
+ dnl ## Process this file with autoconf to produce a configure script.
+ 
+-divert(1)
+-
+ dnl ## Diversion 1 is the autoconf + automake setup phase. We also
+ dnl ## set the PHP version, deal with platform-specific compile
+ dnl ## options and check for the basic compile tools.
+@@ -290,8 +288,6 @@ sinclude(TSRM/threads.m4)
+ sinclude(TSRM/tsrm.m4)
+ 
+ 
+-divert(2)
+-
+ dnl ## Diversion 2 is where we set PHP-specific options and come up
+ dnl ## with reasonable default values for them. We check for pthreads here
+ dnl ## because the information is needed by the SAPI configuration.
+@@ -329,8 +325,6 @@ if test "$enable_maintainer_zts" = "yes"
+   PTHREADS_FLAGS
+ fi
+ 
+-divert(3)
+-
+ dnl ## In diversion 3 we check for compile-time options to the PHP
+ dnl ## core and how to deal with different system dependencies. 
+ dnl ## This includes whether debugging or short tags are enabled
+@@ -675,8 +669,6 @@ if test "x$php_crypt_r" = "x1"; then
+   PHP_CRYPT_R_STYLE
+ fi
+ 
+-divert(4)
+-
+ dnl ## In diversion 4 we check user-configurable general settings.
+ 
+ dnl General settings.
+@@ -916,8 +908,6 @@ else
+   AC_MSG_RESULT([using system default])
+ fi
+ 
+-divert(5)
+-
+ dnl ## In diversion 5 we check which extensions should be compiled.
+ dnl ## All of these are normally in the extension directories.
+ 
+Index: php-5.3.2/ext/standard/config.m4
+===================================================================
+--- php-5.3.2.orig/ext/standard/config.m4
++++ php-5.3.2/ext/standard/config.m4
+@@ -1,7 +1,5 @@
+ dnl $Id: config.m4 295350 2010-02-22 00:34:22Z pajoye $ -*- autoconf -*-
+ 
+-divert(3)dnl
+-
+ dnl
+ dnl Check if flush should be called explicitly after buffered io
+ dnl
+@@ -333,8 +331,6 @@ dnl
+ AC_CHECK_FUNCS(getcwd getwd asinh acosh atanh log1p hypot glob strfmon nice fpclass isinf isnan mempcpy strpncpy)
+ AC_FUNC_FNMATCH	
+ 
+-divert(5)dnl
+-
+ dnl
+ dnl Check if there is a support means of creating a new process
+ dnl and defining which handles it receives
+Index: php-5.3.2/scripts/phpize.m4
+===================================================================
+--- php-5.3.2.orig/scripts/phpize.m4
++++ php-5.3.2/scripts/phpize.m4
+@@ -1,7 +1,5 @@
+ dnl This file becomes configure.in for self-contained extensions.
+ 
+-divert(1)
+-
+ AC_PREREQ(2.13)
+ AC_INIT(config.m4)
+ 

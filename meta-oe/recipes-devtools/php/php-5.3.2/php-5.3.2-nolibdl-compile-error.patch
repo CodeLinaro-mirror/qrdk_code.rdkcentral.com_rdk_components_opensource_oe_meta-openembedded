@@ -1,0 +1,48 @@
+diff -ruN php-5.3.2-a/main/main.c php-5.3.2-b/main/main.c
+--- php-5.3.2-a/main/main.c	2010-02-04 03:21:02.000000000 -0600
++++ php-5.3.2-b/main/main.c	2010-03-11 10:43:38.731978981 -0600
+@@ -2018,7 +2018,9 @@
+ 	   which is always an internal extension and to be initialized
+ 	   ahead of all other internals
+ 	 */
++#if defined(HAVE_LIBDL)
+ 	php_ini_register_extensions(TSRMLS_C);
++#endif
+ 	zend_startup_modules(TSRMLS_C);
+ 
+ 	/* start Zend extensions */
+diff -ruN php-5.3.2-a/main/php_ini.c php-5.3.2-b/main/php_ini.c
+--- php-5.3.2-a/main/php_ini.c	2010-02-03 14:13:18.000000000 -0600
++++ php-5.3.2-b/main/php_ini.c	2010-03-11 10:43:46.659104653 -0600
+@@ -342,6 +342,7 @@
+ }
+ /* }}} */
+ 
++#if defined(HAVE_LIBDL)
+ /* {{{ php_load_php_extension_cb
+  */
+ static void php_load_php_extension_cb(void *arg TSRMLS_DC)
+@@ -349,6 +350,7 @@
+ 	php_load_extension(*((char **) arg), MODULE_PERSISTENT, 0 TSRMLS_CC);
+ }
+ /* }}} */
++#endif
+ 
+ /* {{{ php_load_zend_extension_cb
+  */
+@@ -714,6 +716,7 @@
+ }
+ /* }}} */
+ 
++#if defined(HAVE_LIBDL)
+ /* {{{ php_ini_register_extensions
+  */
+ void php_ini_register_extensions(TSRMLS_D)
+@@ -725,6 +728,7 @@
+ 	zend_llist_destroy(&extension_lists.functions);
+ }
+ /* }}} */
++#endif
+ 
+ /* {{{ php_parse_user_ini_file
+  */
