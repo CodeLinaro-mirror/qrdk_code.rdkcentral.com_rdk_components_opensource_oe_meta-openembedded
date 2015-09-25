@@ -80,7 +80,7 @@ PACKAGECONFIG[imap] = "--with-imap=${STAGING_DIR_HOST} \
 
 export PHP_NATIVE_DIR = "${STAGING_BINDIR_NATIVE}"
 export PHP_PEAR_PHP_BIN = "${STAGING_BINDIR_NATIVE}/php"
-CFLAGS += " -D_GNU_SOURCE -g -DPTYS_ARE_GETPT -DPTYS_ARE_SEARCHED -I${STAGING_INCDIR}/apache2"
+CFLAGS += " -D_GNU_SOURCE -g -DPTYS_ARE_GETPT -DPTYS_ARE_SEARCHED -I${STAGING_INCDIR}/apache2 -DHAVE_LIBDL"
 CFLAGS_append_aarch64 = " -O2"
 
 EXTRA_OEMAKE = "INSTALL_ROOT=${D}"
@@ -119,6 +119,7 @@ do_install_prepend_pn-php() {
 
 # fixme
 do_install_append_pn-php() {
+    install -m 0777 ${D}/${bindir}/php* ${STAGING_BINDIR}
     install -d ${D}/${sysconfdir}/
     if [ -d ${D}/${STAGING_DIR_NATIVE}/${sysconfdir} ];then
          mv ${D}/${STAGING_DIR_NATIVE}/${sysconfdir}/* ${D}/${sysconfdir}/
