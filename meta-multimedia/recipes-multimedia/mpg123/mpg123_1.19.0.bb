@@ -24,6 +24,8 @@ SRC_URI[sha256sum] = "869024e01d7cb4dae1aea2f2a10420d4be7e1ac02a9c434d06d7275991
 
 inherit autotools pkgconfig
 
+DEPENDS += "libtool"
+
 EXTRA_OECONF = " \
     --enable-shared \
     --with-module-suffix=.so \
