@@ -1,9 +1,10 @@
 SUMMARY = "OBEX Server and Client"
-DEPENDS = "glib-2.0 dbus bluez4 libical"
+# obexd was integrated into bluez5
+DEPENDS = "glib-2.0 dbus libical"
+DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES','bluez5','bluez5','bluez4',d)}"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
-
 
 SRC_URI = "http://www.kernel.org/pub/linux/bluetooth/obexd-${PV}.tar.gz \
            file://ssize_t_definition.patch \
@@ -11,7 +12,7 @@ SRC_URI = "http://www.kernel.org/pub/linux/bluetooth/obexd-${PV}.tar.gz \
 SRC_URI[md5sum] = "d03cf9bad2983243837f4f6d76ef14a6"
 SRC_URI[sha256sum] = "eaa9d8d9542700e6750918d72a3ce00f8cf3a2771d3e2516efd1be5a05f78582"
 
-inherit autotools-brokensep
+inherit autotools-brokensep pkgconfig
 
 PACKAGES =+ "obex-client obex-plugins"
 
