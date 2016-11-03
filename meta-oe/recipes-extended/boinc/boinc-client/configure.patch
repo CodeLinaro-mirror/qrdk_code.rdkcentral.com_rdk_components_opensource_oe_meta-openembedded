@@ -1,0 +1,20 @@
+Index: boinc-client_release-7.6-7.6.33/configure.ac
+===================================================================
+--- boinc-client_release-7.6-7.6.33.orig/configure.ac
++++ boinc-client_release-7.6-7.6.33/configure.ac
+@@ -1031,6 +1031,7 @@ if test "${enable_manager}" = yes ; then
+   BOINC_OPTIONS_WXWIDGETS([3.0.0])
+ else
+   AM_CONDITIONAL([GUI_GTK], false)
++  PKG_CHECK_MODULES([GTK2], [gtk+-2.0])
+ fi
+ 
+ dnl ---------- libNotify --------------------------------------------------
+@@ -1082,7 +1083,6 @@ AM_CONDITIONAL(ENABLE_BOINCCRYPT, [test
+ AM_CONDITIONAL(INSTALL_HEADERS, [test "${enable_install_headers}" = yes])
+ AM_CONDITIONAL(HAVE_CUDA_LIB, [test "${enable_client}" = yes -a -f ./coprocs/CUDA/posix/${boinc_platform}/libcudart.so])
+ 
+-PKG_CHECK_MODULES([GTK2], [gtk+-2.0])
+ 
+ dnl ======================================================================
+ dnl some more vodoo required for building portable client-binary (client, clientgui)
