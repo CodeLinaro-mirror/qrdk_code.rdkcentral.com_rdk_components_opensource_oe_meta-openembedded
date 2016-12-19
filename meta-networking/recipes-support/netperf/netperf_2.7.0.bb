@@ -23,7 +23,7 @@ do_configure_prepend () {
 
 do_install () {
         install -d ${D}${bindir}
-        install -m 0755 ${WORKDIR}/git/src/netperf ${D}${bindir}
+        install -m 0755 ${B}/src/netperf ${D}${bindir}
 }
 
 
