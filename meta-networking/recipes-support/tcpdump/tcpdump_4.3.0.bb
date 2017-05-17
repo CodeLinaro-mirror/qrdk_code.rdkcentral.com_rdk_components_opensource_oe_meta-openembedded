@@ -11,6 +11,8 @@ SRC_URI = " \
     file://0001-minimal-IEEE802.15.4-allowed.patch \
     file://ipv6-cross.patch \
     file://configure.patch \
+    file://0002-CVE-2015-2153-2154-2155.patch \
+    file://0003-CVE-2015-0261.patch \
 "
 SRC_URI[md5sum] = "a3fe4d30ac85ff5467c889ff46b7e1e8"
 SRC_URI[sha256sum] = "efd08b610210d39977ec3175fa82dad9fbd33587930081be2a905a712dba4286"
