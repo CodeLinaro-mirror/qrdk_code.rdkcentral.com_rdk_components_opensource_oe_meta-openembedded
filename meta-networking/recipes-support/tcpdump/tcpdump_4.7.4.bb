@@ -7,15 +7,9 @@ DEPENDS = "libpcap"
 
 SRC_URI = " \
     http://www.tcpdump.org/release/tcpdump-${PV}.tar.gz \
-    file://tcpdump_configure_no_-O2.patch \
-    file://0001-minimal-IEEE802.15.4-allowed.patch \
-    file://ipv6-cross.patch \
-    file://configure.patch \
-    file://0002-CVE-2015-2153-2154-2155.patch \
-    file://0003-CVE-2015-0261.patch \
 "
-SRC_URI[md5sum] = "a3fe4d30ac85ff5467c889ff46b7e1e8"
-SRC_URI[sha256sum] = "efd08b610210d39977ec3175fa82dad9fbd33587930081be2a905a712dba4286"
+SRC_URI[md5sum] = "58af728de36f499341918fc4b8e827c3"
+SRC_URI[sha256sum] = "6be520269a89036f99c0b2126713a60965953eab921002b07608ccfc0c47d9af"
 
 inherit autotools-brokensep
 CACHED_CONFIGUREVARS = "ac_cv_linux_vers=${ac_cv_linux_vers=2}"
