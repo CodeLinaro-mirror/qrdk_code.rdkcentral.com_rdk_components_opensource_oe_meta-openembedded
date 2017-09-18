@@ -7,10 +7,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=464ca70af214d2407f6b7d4458158afd"
 
 BBCLASSEXTEND = "native"
 DEPENDS = "zlib bzip2 libxml2 virtual/libiconv php-native lemon-native \
-           openssl libmcrypt expat"
+           openssl libmcrypt"
 DEPENDS_virtclass-native = "zlib-native libxml2-native"
 
-SRC_URI = "http://php.net/distributions/php-${PV}.tar.gz \
+SRC_URI = "http://museum.php.net/php5/php-${PV}.tar.bz2 \
           "
 
 S = "${WORKDIR}/php-${PV}"
@@ -34,11 +34,9 @@ COMMON_EXTRA_OECONF = "--enable-sockets \
                        --libdir=${PHP_LIBDIR} \
 "
 EXTRA_OECONF = "--enable-mbstring \
-                --enable-libxml \
                 --enable-wddx \
                 --enable-fpm \
                 --enable-zip \
-                --with-libexpat-dir=${STAGING_LIBDIR}/.. \
                 --with-libdir=${baselib} \
                 --with-gettext=${STAGING_LIBDIR}/.. \
                 --with-zlib=${STAGING_LIBDIR}/.. \
@@ -62,7 +60,6 @@ PACKAGECONFIG_virtclass-native = ""
 
 PACKAGECONFIG[mysql] = "--with-mysql=${STAGING_DIR_TARGET}${prefix} \
                         --with-mysqli=${STAGING_BINDIR_CROSS}/mysql_config \
-                        --enable-pdo \
                         --with-pdo-mysql=${STAGING_BINDIR_CROSS}/mysql_config \
                         ,--without-mysql --without-mysqli --without-pdo-mysql \
                         ,mysql5"
@@ -148,12 +145,10 @@ do_install_append_pn-php() {
     install -d ${D}/${sysconfdir}/apache2/conf.d
 
     TMP=`dirname ${D}/${TMPDIR}`
-    if [ -e ${TMP} ];then
-        while test ${TMP} != ${D}; do
-            rmdir ${TMP}
-            TMP=`dirname ${TMP}`;
-        done
-    fi
+    while test ${TMP} != ${D}; do
+        rmdir ${TMP}
+        TMP=`dirname ${TMP}`;
+    done
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'apache2', 'true', 'false', d)}; then
         install -d ${D}${libdir}/apache2/modules

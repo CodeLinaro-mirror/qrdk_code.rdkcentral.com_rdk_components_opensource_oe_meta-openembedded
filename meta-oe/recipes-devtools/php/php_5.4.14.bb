@@ -1,6 +1,6 @@
 require php.inc
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=b602636d46a61c0ac0432bbf5c078fe4"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=cb564efdf78cce8ea6e4b5a4f7c05d97"
 
 SRC_URI += "file://acinclude-xml2-config.patch \
             file://0001-php-don-t-use-broken-wrapper-for-mkdir.patch \
@@ -14,8 +14,7 @@ SRC_URI_append_pn-php += "file://iconv.patch \
             file://fix-fpm-cross-compile.patch \
             file://php-fpm.conf \
             file://php-fpm-apache.conf \
-            file://950-Fix-dl-cross-compiling-issue.patch \
 "
 
-SRC_URI[md5sum] = "40d4939e116c46cec0a486e2fab7c8b0"
-SRC_URI[sha256sum] = "6687ed2f09150b2ad6b3780ff89715891f83a9c331e69c90241ef699dec4c43f"
+SRC_URI[md5sum] = "cfdc044be2c582991a1fe0967898fa38"
+SRC_URI[sha256sum] = "5450f3843bc651eb3fb00601f0cce1930aaaf65c7c966c02fe4a46f9c81be20a"
