@@ -10,7 +10,7 @@ DEPENDS = "zlib bzip2 libxml2 virtual/libiconv php-native lemon-native \
            openssl libmcrypt"
 DEPENDS_virtclass-native = "zlib-native libxml2-native"
 
-SRC_URI = "http://museum.php.net/php5/php-${PV}.tar.bz2 \
+SRC_URI = "http://php.net/distributions/php-${PV}.tar.gz \
           "
 
 S = "${WORKDIR}/php-${PV}"
