@@ -7,9 +7,8 @@ DEPENDS = "zlib openssl libgcrypt"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=388a4fb1dea8ceae0be78ba9b01fc139"
 
-PV = "0.5.5+gitr${SRCPV}"
-SRC_URI = "git://git.libssh.org/projects/libssh.git;branch=v0-5"
-SRCREV = "43914a5f07702fe292a968322d5ff2627e0431db"
+SRC_URI = "git://git.libssh.org/projects/libssh.git;branch=v0-7"
+SRCREV = "cdf7690e038230623cbbf6b024ece62f41efa98d"
 S = "${WORKDIR}/git"
 
 EXTRA_OECMAKE = " \
@@ -17,7 +16,11 @@ EXTRA_OECMAKE = " \
     -DWITH_PCAP=1 \
     -DWITH_SFTP=1 \
     -DWITH_ZLIB=1 \
+    -DLIB_SUFFIX=${@d.getVar('baselib',True).replace('lib', '')} \
     "
+
+PACKAGECONFIG ??=""
+PACKAGECONFIG[gssapi] = "-DWITH_GSSAPI=1, -DWITH_GSSAPI=0, krb5, "
 
 inherit cmake
 
@@ -26,3 +29,6 @@ do_configure_prepend () {
     sed -i -e '/add_subdirectory(examples)/s/^/#DONOTWANT/' ${S}/CMakeLists.txt \
         || bbfatal "Failed to disable examples"
 }
+
+FILES_${PN}-dev += "${libdir}/cmake"
+TOOLCHAIN = "gcc"
