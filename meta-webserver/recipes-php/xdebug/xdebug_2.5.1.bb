@@ -6,8 +6,8 @@ DEPENDS = "php"
 
 SRC_URI = "http://xdebug.org/files/xdebug-${PV}.tgz"
 
-SRC_URI[md5sum] = "f216356861e27284580d0208060ea7fa"
-SRC_URI[sha256sum] = "6dd1cba0605e75009331aa3625a19ef49ade5a75aa9fe2ff8a818108d2cce84e"
+SRC_URI[md5sum] = "6167b1e104f1108d77f08eb561a12b22"
+SRC_URI[sha256sum] = "7fda9020fd5a2c549ae5a692fcabbb00f74e39dda81d53d25e622bdab4880ec2"
 
 inherit autotools
 
@@ -29,6 +29,5 @@ do_install() {
     oe_runmake install INSTALL_ROOT=${D}
 }
 
-FILES_${PN} += "${libdir}/php5/extensions/*/*.so"
-FILES_${PN}-dbg += "${libdir}/php5/extensions/*/.debug"
-
+FILES_${PN} += "${libdir}/php*/extensions/*/*.so"
+FILES_${PN}-dbg += "${libdir}/php*/extensions/*/.debug"
