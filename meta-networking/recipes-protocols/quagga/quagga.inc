@@ -8,34 +8,29 @@ around Quagga than the current centralised model of GNU Zebra."
 HOMEPAGE = "http://www.nongnu.org/quagga/"
 SECTION = "network"
 LICENSE = "GPL-2.0 & LGPL-2.0"
-DEPENDS = "readline ncurses perl-native"
+DEPENDS = "readline ncurses perl-native c-ares"
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'snmp', 'net-snmp', '', d)}"
 SNMP_CONF="${@base_contains('DISTRO_FEATURES', 'snmp', '--enable-snmp', '', d)}"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=8ca43cbc842c2336e835926c2166c28b \
-                    file://COPYING.LIB;md5=f30a9716ef3762e3467a2f62bf790f0a"
-
+LIC_FILES_CHKSUM = "file://COPYING;md5=81bcece21748c91ba9992349a91ec11d \
+                    file://COPYING.LIB;md5=01ef24401ded36cd8e5d18bfe947240c"
 INC_PR = "r2"
 
 # the "ip" command from busybox is not sufficient (flush by protocol flushes all routes)
 RDEPENDS_${PN} += "iproute2"
 
 QUAGGASUBDIR = ""
-# ${QUAGGASUBDIR} is deal with old versions. Set to "/attic" for old
-# versions and leave it empty for recent versions.
+
 SRC_URI = "http://download.savannah.gnu.org/releases/quagga${QUAGGASUBDIR}/quagga-${PV}.tar.gz;name=quagga-${PV} \
-           file://fix-for-lib-inpath.patch \
-           file://quagga-0.99.17-libcap.patch \
-           file://quagga-fix-CVE-2013-6051.patch \
-           file://Zebra-sync-zebra-routing-table-with-the-kernel-one.patch \
            file://quagga.init \
            file://quagga.default \
            file://watchquagga.init \
            file://watchquagga.default \
            file://volatiles.03_quagga \
            file://quagga.pam \
-           file://ripd-fix-two-bugs-after-received-SIGHUP.patch \
            file://quagga-Avoid-duplicate-connected-address.patch \
+           file://rtadv.patch  \
+           file://quagga_crash_fix.patch \
 "
 
 MIRRORS += "http://download.savannah.gnu.org/releases/ http://download-mirror.savannah.gnu.org/releases/ \n"
@@ -52,9 +47,6 @@ EXTRA_OECONF = "--sysconfdir=${sysconfdir}/quagga \
                 --enable-vtysh \
                 --enable-isisd \
                 --enable-watchquagga \
-                --enable-ospf-te \
-                --enable-opaque-lsa \
-                --enable-ipv6 \
                 --enable-ospfclient=yes \
                 --enable-multipath=64 \
                 --enable-user=quagga \
@@ -78,11 +70,11 @@ do_install () {
     install -m 0644 ${WORKDIR}/volatiles.03_quagga  ${D}${sysconfdir}/default/volatiles/volatiles.03_quagga
 
     # Install sample configurations for the daemons
-    for f in bgpd vtysh babeld isisd ospfd ripngd zebra ripd ospf6d; do
+    for f in bgpd vtysh isisd ospfd ripngd zebra ripd ospf6d; do
         install -m 0640 ${S}/$f/$f.conf.sample ${D}${sysconfdir}/quagga/$f.conf.sample
     done
 
-    for f in bgpd vtysh babeld isisd ospfd ripngd zebra ripd ospf6d; do
+    for f in bgpd vtysh isisd ospfd ripngd zebra ripd ospf6d; do
 	touch ${D}${sysconfdir}/quagga/$f.conf
     done
     chown quagga:quaggavty ${D}${sysconfdir}/quagga
@@ -118,13 +110,12 @@ do_install () {
 }
 
 # Split into a main package and separate per-protocol packages
-PACKAGE_BEFORE_PN = "${PN}-ospfd ${PN}-ospf6d ${PN}-babeld ${PN}-bgpd \
+PACKAGE_BEFORE_PN = "${PN}-ospfd ${PN}-ospf6d ${PN}-bgpd \
                      ${PN}-ripd ${PN}-ripngd ${PN}-isisd \
                      ${PN}-ospfclient ${PN}-watchquagga"
 
 FILES_${PN}-ospfd       = "${sbindir}/ospfd ${libdir}/libospf.so.*"
 FILES_${PN}-ospf6d      = "${sbindir}/ospf6d"
-FILES_${PN}-babeld      = "${sbindir}/babeld"
 FILES_${PN}-bgpd        = "${sbindir}/bgpd"
 FILES_${PN}-ripd        = "${sbindir}/ripd"
 FILES_${PN}-ripngd      = "${sbindir}/ripngd"
@@ -137,7 +128,6 @@ FILES_${PN}-watchquagga = "${sbindir}/watchquagga ${sysconfdir}/default/watchqua
 CONFFILES_${PN} = "${sysconfdir}/default/quagga \
                    ${sysconfdir}/quagga/bgpd.conf \
                    ${sysconfdir}/quagga/vtysh.conf \
-                   ${sysconfdir}/quagga/babeld.conf \
                    ${sysconfdir}/quagga/isisd.conf \
                    ${sysconfdir}/quagga/ospfd.conf \
                    ${sysconfdir}/quagga/ripngd.conf \
@@ -184,10 +174,6 @@ pkg_prerm_${PN}-ospfd () {
 
 pkg_prerm_${PN}-ospf6d () {
     ${sysconfdir}/init.d/quagga stop ospf6d
-}
-
-pkg_prerm_${PN}-babeld () {
-    ${sysconfdir}/init.d/quagga stop babeld
 }
 
 pkg_prerm_${PN}-bgpd () {
