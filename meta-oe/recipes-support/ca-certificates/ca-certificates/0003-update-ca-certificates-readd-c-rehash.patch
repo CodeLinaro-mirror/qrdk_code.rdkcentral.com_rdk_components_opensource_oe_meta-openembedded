@@ -1,0 +1,75 @@
+--- git.orig/sbin/update-ca-certificates 2018-01-18 17:18:09.763370619 -0500
++++ git/sbin/update-ca-certificates 2018-01-18 17:38:38.895408274 -0500
+@@ -125,6 +125,23 @@
+   PEM="$ETCCERTSDIR/$(basename "$CERT" .crt | sed -e 's/ /_/g' \
+                                                   -e 's/[()]/=/g' \
+                                                   -e 's/,/_/g').pem"
++  if ! test -e "$PEM" || [ "$(readlink "$PEM")" != "${CERT}" ]
++  then
++    ln -sf "${CERT}" "$PEM"
++    echo "+$PEM" >> "$ADDED"
++  fi
++  
++  #this is moved to readd() so the cert isn't added to tempbundle twice
++  # Add trailing newline to certificate, if it is missing (#635570)
++  #sed -e '$a\' "$CERT" >> "$TEMPBUNDLE"
++}
++
++# Fix certificate links so they point to build local locations
++readd() {
++  CERT="$1"
++  PEM="$ETCCERTSDIR/$(basename "$CERT" .crt | sed -e 's/ /_/g' \
++                                                  -e 's/[()]/=/g' \
++                                                  -e 's/,/_/g').pem"
+   if ! test -e "$PEM" || [ "$(readlink "$PEM")" != "${CERT##$SYSROOT}" ]
+   then
+     ln -sf "${CERT##$SYSROOT}" "$PEM"
+@@ -202,6 +219,7 @@
+ ADDED_CNT=$(wc -l < "$ADDED")
+ REMOVED_CNT=$(wc -l < "$REMOVED")
+ 
++# Make hash links of the pem links
+ if [ "$ADDED_CNT" -gt 0 ] || [ "$REMOVED_CNT" -gt 0 ]
+ then
+   # only run if set of files has changed
+@@ -213,6 +231,40 @@
+   fi
+ fi
+ 
++# Fix pem links to have local addresses to SYSROOT
++if [ "$default" = 1 ]; then
++  find -L "$CERTSDIR" -type f -name '*.crt' | sort | while read crt
++  do
++    readd "$crt"
++  done
++fi
++
++# Fix pem links to have local addresses to SYSROOT
++sed -n -e '/^$/d' -e 's/^!//p' "$CERTSCONF" | while read crt
++do
++  remove "$CERTSDIR/$crt"
++done
++
++# Fix pem links to have local addresses to SYSROOT
++sed -e '/^$/d' -e '/^#/d' -e '/^!/d' "$CERTSCONF" | while read crt
++do
++  if ! test -f "$CERTSDIR/$crt"
++  then
++    echo "W: $CERTSDIR/$crt not found, but listed in $CERTSCONF." >&2
++    continue
++  fi
++  readd "$CERTSDIR/$crt"
++done
++
++# Fix pem links to have local addresses to SYSROOT
++if [ -d "$LOCALCERTSDIR" ]
++then
++  find -L "$LOCALCERTSDIR" -type f -name '*.crt' | sort | while read crt
++  do
++    readd "$crt"
++  done
++fi
++
+ chmod 0644 "$TEMPBUNDLE"
+ mv -f "$TEMPBUNDLE" "$CERTBUNDLE"
+ # Restore proper SELinux label after moving the file
