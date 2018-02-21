@@ -1,4 +1,4 @@
-require php.inc
+require php_5.inc
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=120722ac328447294083a64f651c3ddc"
 
