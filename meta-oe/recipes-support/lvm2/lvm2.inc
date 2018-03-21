@@ -46,5 +46,4 @@ TARGET_CC_ARCH += "${LDFLAGS}"
 FILES_${PN} += "${libdir}/device-mapper/*.so ${base_libdir}/udev"
 FILES_${PN}-dbg += "${libdir}/device-mapper/.debug"
 
-RDEPENDS_${PN} = "bash"
 EXTRA_OECONF = "--with-usrlibdir=${libdir}"
