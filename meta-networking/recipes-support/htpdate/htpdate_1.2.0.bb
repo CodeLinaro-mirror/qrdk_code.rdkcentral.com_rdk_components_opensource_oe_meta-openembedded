@@ -33,7 +33,8 @@ do_compile () {
 }
 
 do_install () {
-	oe_runmake install 'INSTALL=install' 'STRIP=echo' 'DESTDIR=${D}' 'BINDIR=${bindir}'
+    oe_runmake install 'INSTALL=install' 'STRIP=echo' 'DESTDIR=${D}' 'BINDIR=${bindir}'
+    rm -rf ${D}/man8
 }
 
 FILES_${PN} += "${bindir}/htpdate"
