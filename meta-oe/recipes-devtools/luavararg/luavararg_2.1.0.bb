@@ -5,9 +5,7 @@ SUMMARY = "luavararg 2.1.0"
 SECTION = "cujo/lib/lua"
 DEPENDS = "lua"
 RDEPENDS_${PN} += "lua (>= 5.3)"
-SRC_URI = "git://github.com/renatomaia/luavararg.git"
-SRC_URI[md5sum] = "0933fe7176731c8d763710b1c4e7f32c"
-SRC_URI[sha256sum] = "6ea01636946df90d8fc3639212504e2c01ba823ecb67fa2dde9248cba4f28218"
+SRC_URI = "git://github.com/getCUJO/luavararg.git"
 SRCREV = "0e5d7adba6e78f706bdddd8a76f8fb1ca79d6cad"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a0faecd3da9190bb6e1ec4c43dd0a6cb"
@@ -18,7 +16,7 @@ LUA_SHARE_DIR = "${datadir}/lua/5.3"
 
 CFLAGS_prepend = " -std=gnu99 -D_GNU_SOURCE -DLUA_USE_LINUX -DCUJO \
 	-I${S} "
-LDFLAGS_append = "-fPIC "
+LDFLAGS_append = " -fPIC "
 
 do_compile() {
 	${CC} -shared -MD -DPIC ${LDFLAGS} ${CFLAGS} ${S}/src/vararg.c \

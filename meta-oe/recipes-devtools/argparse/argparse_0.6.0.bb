@@ -5,7 +5,7 @@ SUMMARY = "A feature-rich command line parser for Lua inspired by argparse for P
 SECTION = "cujo/share/lua"
 DEPENDS = "lua"
 RDEPENDS_${PN} += "lua (>= 5.3)"
-SRC_URI = "git://github.com/mpeterv/argparse.git"
+SRC_URI = "git://github.com/getCUJO/argparse.git"
 SRCREV = "412e6aca393e365f92c0315dfe50181b193f1ace"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=910fce0e89e2555047e2be1388279ece"

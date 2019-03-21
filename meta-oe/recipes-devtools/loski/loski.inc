@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2019 CUJO LLC. All rights reserved.
 
 SECTION = "cujo/lib/lua"
-SRC_URI = "git://github.com/renatomaia/loski.git;tag=v0.1.0-beta;nobranch=1"
+SRC_URI = "git://github.com/getCUJO/loski.git;tag=v0.1.0-beta;nobranch=1"
 DEPENDS = "lua"
 RDEPENDS_${PN} += "lua (>= 5.3)"
 LICENSE = "MIT"

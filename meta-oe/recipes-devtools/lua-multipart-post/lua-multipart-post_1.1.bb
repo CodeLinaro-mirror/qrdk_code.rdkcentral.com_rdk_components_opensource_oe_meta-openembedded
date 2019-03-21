@@ -7,7 +7,7 @@ LICENSE = "LGPLv2+"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=d0534bd9852e57976977cd6ff32a1177"
 DEPENDS = "lua luasocket"
 RDEPENDS_${PN} += "lua (>= 5.3) luasocket (>= 3.1.1)"
-SRC_URI = "git://github.com/catwell/lua-multipart-post.git"
+SRC_URI = "git://github.com/getCUJO/lua-multipart-post.git"
 SRCREV = "808f9ca418753ca3a2a349389e12ee1fd24c0dcb"
 S = "${WORKDIR}/git"
 
