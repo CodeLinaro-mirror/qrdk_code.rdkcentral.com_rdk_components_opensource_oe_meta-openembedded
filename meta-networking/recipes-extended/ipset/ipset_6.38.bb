@@ -17,4 +17,8 @@ SRC_URI[sha256sum] = "ceef625ba31fe0aaa422926c7231a819de0b07644c02c17ebdd3022a29
 
 inherit autotools pkgconfig module-base
 
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 EXTRA_OECONF += "-with-kbuild=${STAGING_KERNEL_DIR} --with-ksource=${STAGING_KERNEL_DIR}"
+EXTRA_OECONF_remove_morty = "-with-kbuild=${STAGING_KERNEL_DIR}"
+EXTRA_OECONF_append_morty = " -with-kbuild=${KBUILD_OUTPUT}"
