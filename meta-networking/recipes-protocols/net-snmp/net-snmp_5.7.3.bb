@@ -1,9 +1,9 @@
 SUMMARY = "Various tools relating to the Simple Network Management Protocol"
 HOMEPAGE = "http://www.net-snmp.org/"
 SECTION = "net"
-LICENSE = "BSD & MIT"
+LICENSE = "BSD"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=9d100a395a38584f2ec18a8275261687"
+LIC_FILES_CHKSUM = "file://README;beginline=3;endline=8;md5=7f7f00ba639ac8e8deb5a622ea24634e"
 
 DEPENDS = "openssl libnl pciutils"
 
@@ -11,34 +11,26 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/net-snmp/net-snmp-${PV}.zip \
            file://init \
            file://snmpd.conf \
            file://snmptrapd.conf \
+           file://systemd-support.patch \
            file://snmpd.service \
            file://snmptrapd.service \
            file://net-snmp-add-knob-whether-nlist.h-are-checked.patch \
            file://fix-libtool-finish.patch \
            file://net-snmp-testing-add-the-output-format-for-ptest.patch \
            file://run-ptest \
+           file://dont-return-incompletely-parsed-varbinds.patch \
            file://0001-config_os_headers-Error-Fix.patch \
+           file://0001-config_os_libs2-Error-Fix.patch \
            file://0001-snmplib-keytools.c-Don-t-check-for-return-from-EVP_M.patch \
+           file://net-snmp-agentx-crash.patch \
            file://0001-get_pid_from_inode-Include-limit.h.patch \
-           file://0002-configure-fix-a-cc-check-issue.patch \
-           file://0004-configure-fix-incorrect-variable.patch \
-           file://net-snmp-5.7.2-fix-engineBoots-value-on-SIGHUP.patch \
-           file://net-snmp-fix-for-disable-des.patch \
-           file://reproducibility-accept-configure-options-from-env.patch \
-           file://0001-net-snmp-fix-compile-error-disable-des.patch \
-           file://net_snmp_compile_error.patch \
-           file://build_compile_define_error.patch \
-           file://systemd-support.patch \
-           file://sd-deamon_h.patch \
-           file://agent_registry.patch \
+           file://0001-BUG-a2584-Fix-snmptrap-to-use-clientaddr-from-snmp.c.patch \
+           file://0001-snmplib-UDPIPv6-transport-Add-a-missing-return-state.patch \
            "
-SRC_URI[md5sum] = "6aae5948df7efde626613d6a4b3cd9d4"
-SRC_URI[sha256sum] = "c6291385b8ed84f05890fe4197005daf7e7ee7b082c2e390fa114a9477a56042"
+SRC_URI[md5sum] = "9f682bd70c717efdd9f15b686d07baee"
+SRC_URI[sha256sum] = "e8dfc79b6539b71a6ff335746ce63d2da2239062ad41872fff4354cafed07a3e"
 
-UPSTREAM_CHECK_URI = "https://sourceforge.net/projects/net-snmp/files/net-snmp/"
-UPSTREAM_CHECK_REGEX = "/net-snmp/(?P<pver>\d+(\.\d+)+)/"
-
-inherit autotools-brokensep update-rc.d siteinfo systemd pkgconfig perlnative ptest
+inherit autotools update-rc.d siteinfo systemd pkgconfig
 
 EXTRA_OEMAKE = "INSTALL_PREFIX=${D} OTHERLDFLAGS='${LDFLAGS}' HOST_CPPFLAGS='${BUILD_CPPFLAGS}'"
 
@@ -51,20 +43,16 @@ PACKAGECONFIG ??= ""
 PACKAGECONFIG[elfutils] = "--with-elf, --without-elf, elfutils"
 PACKAGECONFIG[libnl] = "--with-nl, --without-nl, libnl"
 
-PACKAGECONFIG ??= "${@bb.utils.contains("DISTRO_FEATURES", "ipv6", "ipv6", "", d)} des"                
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', 'ipv6', '', d)}"
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,,"
 
-PACKAGECONFIG[perl] = "--enable-embedded-perl --with-perl-modules=yes, --disable-embedded-perl --with-perl-modules=no,\
-                       perl, perl perl-lib"
-PACKAGECONFIG[des] = "--enable-des,--disable-des"
-
-EXTRA_OECONF = "--enable-shared \
+EXTRA_OECONF = "--disable-embedded-perl \
+                --with-perl-modules=no \
                 --disable-manuals \
                 --with-defaults \
                 --with-install-prefix=${D} \
                 --with-persistent-directory=${localstatedir}/lib/net-snmp \
-                ${@oe.utils.conditional('SITEINFO_ENDIANNESS', 'le', '--with-endianness=little', '--with-endianness=big', d)} \
-"
+                ${@base_conditional('SITEINFO_ENDIANNESS', 'le', '--with-endianness=little', '--with-endianness=big', d)}"
 
 # net-snmp needs to have mib-modules=smux enabled to enable quagga to support snmp
 EXTRA_OECONF += "--with-mib-modules=smux"
@@ -74,44 +62,13 @@ CACHED_CONFIGUREVARS = " \
     ac_cv_header_valgrind_memcheck_h=no \
     ac_cv_ETC_MNTTAB=/etc/mtab \
     lt_cv_shlibpath_overrides_runpath=yes \
-    ac_cv_path_UNAMEPROG=${base_bindir}/uname \
-    ac_cv_file__etc_printcap=no \
-    NETSNMP_CONFIGURE_OPTIONS= \
 "
-export PERLPROG="${bindir}/env perl"
-PERLPROG_append = "${@bb.utils.contains('PACKAGECONFIG', 'perl', ' -I${WORKDIR}', '', d)}"
-
-HAS_PERL = "${@bb.utils.contains('PACKAGECONFIG', 'perl', '1', '0', d)}"
-
-PTEST_BUILD_HOST_FILES += "net-snmp-config gen-variables"
 
 do_configure_prepend() {
+    export PERLPROG="${bindir}/env perl"
     sed -i -e "s|I/usr/include|I${STAGING_INCDIR}|g" \
         "${S}"/configure \
         "${S}"/configure.d/config_os_libs2
-
-    if [ "${HAS_PERL}" = "1" ]; then
-        # this may need to be changed when package perl has any change.
-        cp -f ${STAGING_DIR_TARGET}/usr/lib*/perl/*/Config.pm ${WORKDIR}/
-        cp -f ${STAGING_DIR_TARGET}/usr/lib*/perl/*/Config_heavy.pl ${WORKDIR}/
-        sed -e "s@libpth => '/usr/lib.*@libpth => '${STAGING_DIR_TARGET}/${libdir} ${STAGING_DIR_TARGET}/${base_libdir}',@g" \
-            -e "s@privlibexp => '/usr@privlibexp => '${STAGING_DIR_TARGET}/usr@g" \
-            -e "s@scriptdir => '/usr@scriptdir => '${STAGING_DIR_TARGET}/usr@g" \
-            -e "s@sitearchexp => '/usr@sitearchexp => '${STAGING_DIR_TARGET}/usr@g" \
-            -e "s@sitelibexp => '/usr@sitearchexp => '${STAGING_DIR_TARGET}/usr@g" \
-            -e "s@vendorarchexp => '/usr@vendorarchexp => '${STAGING_DIR_TARGET}/usr@g" \
-            -e "s@vendorlibexp => '/usr@vendorlibexp => '${STAGING_DIR_TARGET}/usr@g" \
-            -i ${WORKDIR}/Config.pm
-    fi
-
-}
-
-do_configure_append() {
-    if [ "${HAS_PERL}" = "1" ]; then
-        sed -e "s@^NSC_INCLUDEDIR=.*@NSC_INCLUDEDIR=${STAGING_DIR_TARGET}\$\{includedir\}@g" \
-            -e "s@^NSC_LIBDIR=-L.*@NSC_LIBDIR=-L${STAGING_DIR_TARGET}\$\{libdir\}@g" \
-            -i ${B}/net-snmp-config
-    fi
 }
 
 do_install_append() {
@@ -125,20 +82,8 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/snmptrapd.service ${D}${systemd_unitdir}/system
     sed    -e "s@^NSC_SRCDIR=.*@NSC_SRCDIR=.@g" \
         -i ${D}${bindir}/net-snmp-create-v3-user
-    sed -e 's@^NSC_SRCDIR=.*@NSC_SRCDIR=.@g' \
-        -e 's@[^ ]*-fdebug-prefix-map=[^ "]*@@g' \
-        -e 's@[^ ]*--sysroot=[^ "]*@@g' \
-        -e 's@[^ ]*--with-libtool-sysroot=[^ "]*@@g' \
-        -e 's@[^ ]*--with-install-prefix=[^ "]*@@g' \
-        -e 's@[^ ]*PKG_CONFIG_PATH=[^ "]*@@g' \
-        -e 's@[^ ]*PKG_CONFIG_LIBDIR=[^ "]*@@g' \
+    sed    -e "s@^NSC_SRCDIR=.*@NSC_SRCDIR=.@g" \
         -i ${D}${bindir}/net-snmp-config
-
-    if [ "${HAS_PERL}" = "1" ]; then
-        sed -e "s@^NSC_INCLUDEDIR=.*@NSC_INCLUDEDIR=\$\{includedir\}@g" \
-            -e "s@^NSC_LIBDIR=-L.*@NSC_LIBDIR=-L\$\{libdir\}@g" \
-            -i ${D}${bindir}/net-snmp-config
-    fi
 }
 
 do_install_ptest() {
@@ -160,7 +105,6 @@ do_install_ptest() {
 }
 
 SYSROOT_PREPROCESS_FUNCS += "net_snmp_sysroot_preprocess"
-SNMP_DBGDIR = "/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR}"
 
 net_snmp_sysroot_preprocess () {
     if [ -e ${D}${bindir}/net-snmp-config ]; then
@@ -172,26 +116,14 @@ net_snmp_sysroot_preprocess () {
             -e "s@^includedir=.*@includedir=${STAGING_INCDIR}@g" \
             -e "s@^libdir=.*@libdir=${STAGING_LIBDIR}@g" \
             -e "s@^NSC_SRCDIR=.*@NSC_SRCDIR=${S}@g" \
-            -e "s@-fdebug-prefix-map=${SNMP_DBGDIR}@-fdebug-prefix-map=${WORKDIR}=${SNMP_DBGDIR}@g" \
-            -e "s@-fdebug-prefix-map= -fdebug-prefix-map=@-fdebug-prefix-map=${STAGING_DIR_NATIVE}= \
-                  -fdebug-prefix-map=${STAGING_DIR_HOST}=@g" \
-            -e "s@--sysroot=@--sysroot=${STAGING_DIR_HOST}@g" \
-            -e "s@--with-libtool-sysroot=@--with-libtool-sysroot=${STAGING_DIR_HOST}@g" \
-            -e "s@--with-install-prefix=@--with-install-prefix=${D}@g" \
           -i  ${SYSROOT_DESTDIR}${bindir_crossscripts}/net-snmp-config
     fi
 }
 
 PACKAGES += "${PN}-libs ${PN}-mibs ${PN}-server ${PN}-client ${PN}-server-snmpd ${PN}-server-snmptrapd"
 
-
-# perl module
-PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'perl', '${PN}-perl-modules', '', d)}"
-
 ALLOW_EMPTY_${PN} = "1"
 ALLOW_EMPTY_${PN}-server = "1"
-
-FILES_${PN}-perl-modules = "${libdir}/perl/*"
 
 FILES_${PN}-libs = "${libdir}/lib*${SOLIBS}"
 FILES_${PN}-mibs = "${datadir}/snmp/mibs"
@@ -205,7 +137,6 @@ FILES_${PN}-server-snmptrapd = "${sbindir}/snmptrapd \
                                 ${sysconfdir}/snmp/snmptrapd.conf \
                                 ${systemd_unitdir}/system/snmptrapd.service \
 "
-
 
 FILES_${PN} = ""
 FILES_${PN}-client = "${bindir}/* ${datadir}/snmp/"
@@ -227,7 +158,6 @@ SYSTEMD_PACKAGES = "${PN}-server-snmpd \
 SYSTEMD_SERVICE_${PN}-server-snmpd = "snmpd.service"
 SYSTEMD_SERVICE_${PN}-server-snmptrapd =  "snmptrapd.service"
 
-RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'net-snmp-perl-modules', '', d)}"
 RDEPENDS_${PN} += "net-snmp-client"
 RDEPENDS_${PN}-server-snmpd += "net-snmp-mibs"
 RDEPENDS_${PN}-server-snmptrapd += "net-snmp-server-snmpd"
