@@ -1,0 +1,7 @@
+LTO_pn-liboauth = ""
+LTO_pn-faad2 = ""
+LTO_pn-giflib = ""
+LTO_pn-breakpad = ""
+LTO_pn-liboil = ""
+LTO_pn-xfsprogs = ""
+LTO_pn-libtinyxml = ""
