@@ -6,12 +6,20 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=35e00f0c4c96a0820a03e0b31e6416be"
 
 DEPENDS = "libeigen glog"
 
-SRC_URI = "git://github.com/ceres-solver/ceres-solver.git"
+SRC_URI = "git://github.com/ceres-solver/ceres-solver.git;branch=master;protocol=https"
 SRCREV = "facb199f3eda902360f9e1d5271372b7e54febe1"
 
 S = "${WORKDIR}/git"
 
 inherit cmake
+
+do_configure_prepend() {
+    # otherwise https://github.com/ceres-solver/ceres-solver/blob/0b748597889f460764f6c980a00c6f502caa3875/cmake/AddGerritCommitHook.cmake#L68
+    # will try to fetch https://ceres-solver-review.googlesource.com/tools/hooks/commit-msg durind do_configure
+    # which sometimes gets stuck (as there is no TIMEOUT set in DOWNLOAD)
+    # and we really don't need Gerrit's Change-Id tags when just building this
+    touch ${S}/.git/hooks/commit-msg
+}
 
 # We don't want path to eigen3 in ceres-solver RSS to be
 # used by components which use CeresConfig.cmake from their

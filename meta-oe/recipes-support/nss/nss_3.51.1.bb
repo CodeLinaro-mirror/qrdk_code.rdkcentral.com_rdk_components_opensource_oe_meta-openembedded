@@ -36,6 +36,10 @@ SRC_URI = "http://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${VERSIO
            file://0001-Enable-uint128-on-mips64.patch \
            file://0001-Bug-1631576-Force-a-fixed-length-for-DSA-exponentiat.patch \
            file://CVE-2020-12401.patch \
+           file://CVE-2020-6829_12400.patch \
+           file://CVE-2020-12403_1.patch \
+           file://CVE-2020-12403_2.patch \
+           file://CVE-2021-43527.patch \
            "
 
 SRC_URI[md5sum] = "6acaf1ddff69306ae30a908881c6f233"
@@ -55,6 +59,8 @@ TUNE_CCARGS_remove = "-mcpu=cortex-a55+crc -mcpu=cortex-a55 -mcpu=cortex-a55+crc
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
+CFLAGS_append_class-native = " -D_XOPEN_SOURCE "
+
 do_configure_prepend_libc-musl () {
     sed -i -e '/-DHAVE_SYS_CDEFS_H/d' ${S}/nss/lib/dbm/config/config.mk
 }
@@ -62,7 +68,6 @@ do_configure_prepend_libc-musl () {
 do_compile_prepend_class-native() {
     export NSPR_INCLUDE_DIR=${STAGING_INCDIR_NATIVE}/nspr
     export NSPR_LIB_DIR=${STAGING_LIBDIR_NATIVE}
-    export NSS_ENABLE_WERROR=0
 }
 
 do_compile_prepend_class-nativesdk() {
@@ -81,6 +86,11 @@ do_compile() {
     export NATIVE_CC="${BUILD_CC}"
     # Additional defines needed on Centos 7
     export NATIVE_FLAGS="${BUILD_CFLAGS} -DLINUX -Dlinux"
+
+    # POSIX.1-2001 states that the behaviour of getcwd() when passing a null
+    # pointer as the buf argument, is unspecified.
+    export NATIVE_FLAGS="${NATIVE_FLAGS} -DGETCWD_CANT_MALLOC"
+
     export BUILD_OPT=1
 
     export FREEBL_NO_DEPEND=1
@@ -279,3 +289,6 @@ FILES_${PN}-dev = "\
 RDEPENDS_${PN}-smime = "perl"
 
 BBCLASSEXTEND = "native nativesdk"
+
+# CVE-2006-5201 affects only Sun Solaris
+CVE_CHECK_WHITELIST += "CVE-2006-5201"

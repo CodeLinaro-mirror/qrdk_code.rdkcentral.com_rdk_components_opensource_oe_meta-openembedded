@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f55e0974e3d6db00ca6f57f2d206396"
 
 SRCREV = "e41cfb986c1b1935770de554872247453fdbb079"
 
-SRC_URI = "git://github.com/cyrusimap/cyrus-sasl;protocol=https \
+SRC_URI = "git://github.com/cyrusimap/cyrus-sasl;protocol=https;branch=master \
            file://avoid-to-call-AC_TRY_RUN.patch \
            file://Fix-hardcoded-libdir.patch \
            file://debian_patches_0014_avoid_pic_overwrite.diff \
@@ -96,3 +96,6 @@ FILES_${PN}-dbg       += "${libdir}/sasl2/.debug"
 FILES_${PN}-staticdev += "${libdir}/sasl2/*.a"
 
 INSANE_SKIP_${PN} += "dev-so"
+
+# CVE-2020-8032 affects only openSUSE
+CVE_CHECK_WHITELIST += "CVE-2020-8032"
