@@ -30,7 +30,7 @@ S = "${WORKDIR}/git"
 
 PARALLEL_MAKE = ""
 
-inherit pkgconfig autotools-brokensep update-rc.d python3native perlnative ptest cpan systemd distro_features_check
+inherit pkgconfig autotools-brokensep update-rc.d python3native perlnative ptest cpan systemd features_check
 REQUIRED_DISTRO_FEATURES = "apparmor"
 
 #PACKAGECONFIG ??= "python perl aa-decode"
