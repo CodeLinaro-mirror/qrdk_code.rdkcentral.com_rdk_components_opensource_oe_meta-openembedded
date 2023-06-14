@@ -12,6 +12,7 @@ SECTION = "libs"
 inherit autotools
 
 DEPENDS_append_libc-musl = " libucontext"
+DEPENDS = "zlib"
 
 BBCLASSEXTEND = "native"
 
@@ -44,6 +45,7 @@ SRC_URI = "git://github.com/google/breakpad;name=breakpad;branch=main;protocol=h
            file://0001-lss-Match-syscalls-to-match-musl.patch;patchdir=src/third_party/lss \
            file://mips_asm_sgidefs.patch;patchdir=src/third_party/lss \
            file://0001-Do-not-add-stack-pointer-to-clobber-list.patch;patchdir=src/third_party/lss \
+           file://0001-Add-support-for-compressed-section-headers-to-dump_s.patch \
 "
 S = "${WORKDIR}/git"
 
