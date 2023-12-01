@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSES/GPL-2.0-or-later.txt;md5=b234ee4d69f5fc
 
 S = "${WORKDIR}/libmbim-${SRCREV}/"
 SRCREV = "357369cc6b014a9996ffe46772428a478c1ee7bd"
-SRC_URI = "https://gitlab.freedesktop.org/mobile-broadband/libmbim/-/archive/${SRCREV}/libmbim-${SRCREV}.tar.bz2"
-SRC_URI[sha256sum] = "aadc19893d127a3edf0a0d2050581d6c5c721fc16227f33d6939a705d558a56a"
+SRC_URI = "https://gitlab.freedesktop.org/mobile-broadband/libmbim/-/archive/${SRCREV}/libmbim-${SRCREV}.tar.gz"
+SRC_URI[sha256sum] = "4798d3e6b75f65b36ee988723ecf1906305e7aa43d728539e4ced99ffc9ef140"
 
 #DEPENDS = "glib-2.0 glib-2.0-native libgudev"
 DEPENDS=" \

@@ -22,9 +22,9 @@ DEPENDS=" \
 
 S = "${WORKDIR}/libqmi-${SRCREV}/"
 SRCREV = "d0973775d2bce93fb927ce7bc6c61385b146f54d"
-SRC_URI = "https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/archive/${SRCREV}/libqmi-${SRCREV}.tar.bz2"
+SRC_URI = "https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/archive/${SRCREV}/libqmi-${SRCREV}.tar.gz"
 
-SRC_URI[sha256sum] = "9d3292cb7f4387e760c304802ac1266fc541ce501bc0ada107bfd7d493704e68"
+SRC_URI[sha256sum] = "e16a7f7617722f16084f6af3b07f454d8fd6c8fbad338f9c075025c01819fd48"
 
 PACKAGECONFIG ??= "udev mbim"
 PACKAGECONFIG[qrtr] = "-Dqrtr=true,-Dqrtr=false,libqrtr-glib"
