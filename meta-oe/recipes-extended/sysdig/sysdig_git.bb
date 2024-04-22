@@ -15,10 +15,10 @@ JIT_mipsarchn64 = ""
 JIT_riscv64 = ""
 JIT_riscv32 = ""
 
-DEPENDS += "lua${JIT} zlib c-ares grpc-native grpc curl ncurses jsoncpp tbb jq openssl elfutils protobuf protobuf-native jq-native"
+DEPENDS += "libb64 lua${JIT} zlib c-ares grpc-native grpc curl ncurses jsoncpp tbb jq openssl elfutils protobuf protobuf-native jq-native"
 RDEPENDS_${PN} = "bash"
 
-SRC_URI = "git://github.com/draios/sysdig.git;branch=dev \
+SRC_URI = "git://github.com/draios/sysdig.git;branch=dev;protocol=https \
            file://0001-fix-build-with-LuaJIT-2.1-betas.patch \
            file://0001-Fix-build-with-musl-backtrace-APIs-are-glibc-specifi.patch \
            file://fix-uint64-const.patch \
@@ -32,7 +32,6 @@ S = "${WORKDIR}/git"
 EXTRA_OECMAKE = "\
                 -DBUILD_DRIVER=OFF \
                 -DUSE_BUNDLED_DEPS=OFF \
-                -DUSE_BUNDLED_B64=ON \
                 -DCREATE_TEST_TARGETS=OFF \
                 -DDIR_ETC=${sysconfdir} \
                 -DLUA_INCLUDE_DIR=${STAGING_INCDIR}/luajit-2.1 \

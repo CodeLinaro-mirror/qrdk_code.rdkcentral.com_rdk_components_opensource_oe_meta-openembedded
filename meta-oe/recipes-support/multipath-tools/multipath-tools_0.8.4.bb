@@ -29,7 +29,7 @@ DEPENDS = "libdevmapper \
 
 LICENSE = "GPLv2"
 
-SRC_URI = "git://git.opensvc.com/multipath-tools/.git;protocol=http \
+SRC_URI = "git://github.com/opensvc/multipath-tools.git;protocol=http;branch=master \
            file://multipathd.oe \
            file://multipath.conf.example \
            file://0021-RH-fixup-udev-rules-for-redhat.patch \
@@ -45,6 +45,8 @@ SRC_URI = "git://git.opensvc.com/multipath-tools/.git;protocol=http \
            file://0031-Always-use-devmapper-for-kpartx.patch \
            file://0001-fix-bug-of-do_compile-and-do_install.patch \
            file://0001-add-explicit-dependency-on-libraries.patch \
+           file://CVE-2022-41973.patch \
+           file://CVE-2022-41974.patch \
            "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=5f30f0716dfdd0d91eb439ebec522ec2"
@@ -117,3 +119,6 @@ FILES_kpartx = "${base_sbindir}/kpartx \
 
 RDEPENDS_${PN} += "kpartx"
 PARALLEL_MAKE = ""
+
+FILES:${PN}-libs += "usr/lib/*.so.*"
+FILES:${PN}-libs += "usr/lib/tmpfiles.d/*"

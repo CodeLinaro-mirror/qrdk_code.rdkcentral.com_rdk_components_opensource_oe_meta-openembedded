@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f55e0974e3d6db00ca6f57f2d206396"
 
 SRCREV = "e41cfb986c1b1935770de554872247453fdbb079"
 
-SRC_URI = "git://github.com/cyrusimap/cyrus-sasl;protocol=https \
+SRC_URI = "git://github.com/cyrusimap/cyrus-sasl;protocol=https;branch=master \
            file://avoid-to-call-AC_TRY_RUN.patch \
            file://Fix-hardcoded-libdir.patch \
            file://debian_patches_0014_avoid_pic_overwrite.diff \
@@ -17,6 +17,7 @@ SRC_URI = "git://github.com/cyrusimap/cyrus-sasl;protocol=https \
            file://0001-Allow-saslauthd-to-be-built-outside-of-source-tree-w.patch \
            file://0001-makeinit.sh-fix-parallel-build-issue.patch \
            file://CVE-2019-19906.patch \
+           file://CVE-2022-24407.patch \
            "
 
 UPSTREAM_CHECK_URI = "https://github.com/cyrusimap/cyrus-sasl/archives"
@@ -96,3 +97,6 @@ FILES_${PN}-dbg       += "${libdir}/sasl2/.debug"
 FILES_${PN}-staticdev += "${libdir}/sasl2/*.a"
 
 INSANE_SKIP_${PN} += "dev-so"
+
+# CVE-2020-8032 affects only openSUSE
+CVE_CHECK_WHITELIST += "CVE-2020-8032"

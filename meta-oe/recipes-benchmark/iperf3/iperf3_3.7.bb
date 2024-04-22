@@ -13,8 +13,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f9088fe7ffdccd042f7645f1012d7f70"
 
 DEPENDS = "openssl"
 
-SRC_URI = "git://github.com/esnet/iperf.git \
+SRC_URI = "git://github.com/esnet/iperf.git;branch=master;protocol=https \
            file://0002-Remove-pg-from-profile_CFLAGS.patch \
+           file://0001-Fix-memory-allocation-hazard-1542-.-1543.patch \
            "
 
 SRCREV = "dfcea9f6a09ead01089a3c9d20c7032f2c0af2c1"
@@ -28,3 +29,5 @@ PACKAGECONFIG[lksctp] = "ac_cv_header_netinet_sctp_h=yes,ac_cv_header_netinet_sc
 CFLAGS += "-D_GNU_SOURCE"
 
 EXTRA_OECONF = "--with-openssl=${RECIPE_SYSROOT}${prefix}"
+
+CVE_PRODUCT = "iperf_project:iperf"

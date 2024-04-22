@@ -32,6 +32,5 @@ RDEPENDS_${PN} = "\
     python3-dateutil \
     python3-kiwisolver \
     python3-pytz \
+    python3-pillow \
 "
-
-BBCLASSEXTEND = "native"

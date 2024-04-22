@@ -6,9 +6,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=94d55d512a9ba36caa9b7df079bae19f"
 
 SRCREV = "52b71f0831dcbde508bd3a961d84abb80a62480f"
 
-SRC_URI = "git://git.code.sf.net/p/atftp/code \
+SRC_URI = "git://git.code.sf.net/p/atftp/code;branch=master \
            file://atftpd.init \
            file://atftpd.service \
+           file://0001-options.c-Proper-fix-for-the-read-past-end-of-array.patch \
+           file://0001-fix-buffer-overflow-in-atftpd.patch \
 "
 SRC_URI_append_libc-musl = " file://0001-argz.h-fix-musl-compile-add-missing-defines.patch \
                              file://0002-tftp.h-tftpd.h-fix-musl-compile-missing-include.patch \

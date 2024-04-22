@@ -15,12 +15,11 @@ SRC_URI = "https://downloads.mariadb.org/interstitial/${BP}/source/${BP}.tar.gz 
            file://support-files-CMakeLists.txt-fix-do_populate_sysroot.patch \
            file://sql-CMakeLists.txt-fix-gen_lex_hash-not-found.patch \
            file://0001-disable-ucontext-on-musl.patch \
-           file://c11_atomics.patch \
-           file://clang_version_header_conflict.patch \
            file://fix-arm-atomic.patch \
+           file://CVE-2022-47015.patch \
           "
-SRC_URI[md5sum] = "e8193b9cd008b6d7f177f5a5c44c7a9f"
-SRC_URI[sha256sum] = "a7b104e264311cd46524ae546ff0c5107978373e4a01cf7fd8a241454548d16e"
+
+SRC_URI[sha256sum] = "003fd23f3c6ee516176e1b62b0b43cdb6cdd3dcd4e30f855c1c5ab2baaf5a86c"
 
 UPSTREAM_CHECK_URI = "https://github.com/MariaDB/server/releases"
 
@@ -167,8 +166,12 @@ do_install() {
         mv ${D}${datadir}/doc/README ${D}${datadir}/doc/${PN}/
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'true', 'false', d)}; then
-        mv ${D}/lib/security ${D}/${libdir}
-        rmdir --ignore-fail-on-non-empty ${D}/lib
+        pam_so=$(find ${D} -name pam_user_map.so)
+        if [ x"${pam_so}" != x ]; then
+            pam_dir=$(dirname ${pam_so})
+            mv ${pam_dir} ${D}/${libdir}
+            rmdir --ignore-fail-on-non-empty ${pam_dir%security}
+        fi
     fi
 }
 

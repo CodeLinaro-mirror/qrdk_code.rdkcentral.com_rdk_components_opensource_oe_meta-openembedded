@@ -18,6 +18,7 @@ SRC_URI = " \
     file://add-ptest.patch \
     file://run-ptest \
     file://0001-PPP-When-un-escaping-don-t-allocate-a-too-large-buff.patch \
+    file://CVE-2018-16301.patch \
 "
 
 SRC_URI[md5sum] = "a4ead41d371f91aa0a2287f589958bae"
@@ -50,3 +51,8 @@ do_install_append() {
 do_compile_ptest() {
     oe_runmake buildtest-TESTS
 }
+
+#https://nvd.nist.gov/vuln/detail/CVE-2020-8036
+#Introduce in 4.9 by 246ca110 Autosar SOME/IP protocol support
+#which does not exist in 4.9.3
+CVE_CHECK_WHITELIST += "CVE-2020-8036"

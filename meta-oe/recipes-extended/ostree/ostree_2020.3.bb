@@ -22,7 +22,7 @@ DEPENDS = " \
 PREMIRRORS = ""
 
 SRC_URI = " \
-    gitsm://github.com/ostreedev/ostree \
+    gitsm://github.com/ostreedev/ostree;branch=main;protocol=https \
     file://run-ptest \
 "
 SRCREV = "6ed48234ba579ff73eb128af237212b0a00f2057"
@@ -176,12 +176,12 @@ RDEPENDS_${PN}-ptest += " \
     util-linux \
     xz \
     ${PN}-trivial-httpd \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python', 'python3-pyyaml', '', d)} \
+    python3-pyyaml \
     ${@bb.utils.contains('PACKAGECONFIG', 'gjs', 'gjs', '', d)} \
 "
 RDEPENDS_${PN}-ptest_append_libc-glibc = " glibc-utils glibc-localedata-en-us"
 
-RRECOMMENDS_${PN} += "kernel-module-overlay"
+RRECOMMENDS_${PN}_append_class-target = " kernel-module-overlay"
 
 SYSTEMD_SERVICE_${PN} = "ostree-remount.service ostree-finalize-staged.path"
 SYSTEMD_SERVICE_${PN}-switchroot = "ostree-prepare-root.service"

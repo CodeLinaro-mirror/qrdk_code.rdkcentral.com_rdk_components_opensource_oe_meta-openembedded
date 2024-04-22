@@ -3,7 +3,7 @@ HOMEPAGE = "http://www.tigervnc.com/"
 LICENSE = "GPLv2+"
 SECTION = "x11/utils"
 DEPENDS = "xserver-xorg gnutls jpeg libxtst gettext-native fltk"
-RDEPENDS_${PN} = "coreutils hicolor-icon-theme perl"
+RDEPENDS_${PN} = "coreutils hicolor-icon-theme perl xkbcomp"
 
 LIC_FILES_CHKSUM = "file://LICENCE.TXT;md5=75b02c2872421380bbd47781d2bd75d3"
 
@@ -17,7 +17,7 @@ B = "${S}"
 
 SRCREV = "4739493b635372bd40a34640a719f79fa90e4dba"
 
-SRC_URI = "git://github.com/TigerVNC/tigervnc.git;branch=1.10-branch \
+SRC_URI = "git://github.com/TigerVNC/tigervnc.git;branch=1.10-branch;protocol=https \
            file://0002-do-not-build-tests-sub-directory.patch \
            file://0003-add-missing-dynamic-library-to-FLTK_LIBRARIES.patch \
            file://0004-tigervnc-add-fPIC-option-to-COMPILE_FLAGS.patch \

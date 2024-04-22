@@ -21,8 +21,8 @@ SRCREV_inih = "4b10c654051a86556dfdb634c891b6c3224c4109"
 SRCREV_FORMAT = "rwmem_inih"
 
 SRC_URI = " \
-    git://github.com/tomba/rwmem.git;protocol=https;name=rwmem \
-    git://github.com/benhoyt/inih.git;protocol=https;name=inih;nobranch=1;destsuffix=git/ext/inih \
+    git://github.com/tomba/rwmem.git;protocol=https;name=rwmem;branch=master \
+    git://github.com/benhoyt/inih.git;protocol=https;name=inih;branch=master;destsuffix=git/ext/inih \
 "
 
 S = "${WORKDIR}/git"

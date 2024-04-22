@@ -30,6 +30,7 @@ SRC_URI = "${SAMBA_MIRROR}/stable/samba-${PV}.tar.gz \
            file://0001-nsswitch-nsstest.c-Avoid-nss-function-conflicts-with.patch \
            file://CVE-2020-14318.patch \
            file://CVE-2020-14383.patch \
+           file://CVE-2023-42669.patch \
            "
 SRC_URI_append_libc-musl = " \
            file://samba-pam.patch \
@@ -44,6 +45,10 @@ SRC_URI[sha256sum] = "7dcfc2aaaac565b959068788e6a43fc79ce2a03e7d523f5843f7a9fddf
 UPSTREAM_CHECK_REGEX = "samba\-(?P<pver>4\.10(\.\d+)+).tar.gz"
 
 inherit systemd waf-samba cpan-base perlnative update-rc.d
+
+# CVE-2011-2411 is valnerble only on HP NonStop Servers.
+CVE_CHECK_WHITELIST += "CVE-2011-2411" 
+
 # remove default added RDEPENDS on perl
 RDEPENDS_${PN}_remove = "perl"
 

@@ -11,7 +11,7 @@ LICENSE = "GPLv2"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=e870c934e2c3d6ccf085fd7cf0a1e2e2"
 
-SRC_URI = "git://gitosis.stanford.edu/openflow.git;protocol=git"
+SRC_URI = "git://gitosis.stanford.edu/openflow.git;protocol=git;branch=master"
 
 DEPENDS = "virtual/libc"
 
@@ -35,3 +35,7 @@ do_install_append() {
     # Remove /var/run as it is created on startup
     rm -rf ${D}${localstatedir}/run
 }
+
+# This CVE is not for this product but cve-check assumes it is
+# because two CPE collides when checking the NVD database
+CVE_CHECK_WHITELIST = "CVE-2018-1078"
