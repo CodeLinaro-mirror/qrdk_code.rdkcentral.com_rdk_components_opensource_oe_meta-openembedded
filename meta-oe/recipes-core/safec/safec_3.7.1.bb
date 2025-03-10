@@ -12,7 +12,7 @@ SRC_URI = "git://github.com/rurban/safeclib.git;branch=master;protocol=https \
            file://0001-strpbrk_s-Remove-unused-variable-len.patch \
            "
 
-COMPATIBLE_HOST = '(x86_64|i.86|powerpc|powerpc64|arm|aarch64|mips).*-linux'
+COMPATIBLE_HOST = '(riscv64|x86_64|i.86|powerpc|powerpc64|arm|aarch64|mips).*-linux'
 
 PACKAGES =+ "${PN}-check"
 
