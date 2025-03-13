@@ -12,11 +12,13 @@ UPSTREAM_CHECK_REGEX = "nftables-(?P<pver>\d+(\.\d+){2,}).tar.bz2"
 SRC_URI = "http://www.netfilter.org/projects/nftables/files/${BP}.tar.bz2 \
            file://0001-examples-compile-with-make-check-and-add-AM_CPPFLAGS.patch \
            file://run-ptest \
+           file://nftables.service \
+           file://nftables.conf \
           "
 
 SRC_URI[sha256sum] = "0b28a36ffcf4567b841de7bd3f37918b1fed27859eb48bdec51e1f7a83954c02"
 
-inherit autotools manpages pkgconfig ptest
+inherit autotools manpages pkgconfig ptest systemd
 
 PACKAGECONFIG ??= "python readline json"
 PACKAGECONFIG[json] = "--with-json, --without-json, jansson"
@@ -51,3 +53,14 @@ do_install_ptest() {
     sed -i 's#/usr/bin/python#/usr/bin/python3#' ${D}${PTEST_PATH}/${TESTDIR}/json_echo/run-test.py
     sed -i 's#/usr/bin/env python#/usr/bin/env python3#' ${D}${PTEST_PATH}/${TESTDIR}/py/nft-test.py
 }
+
+do_install:append () {
+    install -d ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/nftables.service ${D}${systemd_unitdir}/system
+    sed -i -e 's#@SBINDIR@#${sbindir}#g' ${D}${systemd_unitdir}/system/nftables.service
+    install -m 0644 ${WORKDIR}/nftables.conf ${D}${sbindir}/nftables.conf
+}
+
+SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_SERVICE:${PN} = "nftables.service"
+
