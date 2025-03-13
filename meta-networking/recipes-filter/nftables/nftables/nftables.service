@@ -1,0 +1,14 @@
+[Unit]
+Description=nftables Packet Filtering Framework
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /usr/sbin/nftables.conf
+ExecReload=/usr/sbin/nft flush ruleset && /usr/sbin/nft -f /usr/sbin/nftables.conf
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
