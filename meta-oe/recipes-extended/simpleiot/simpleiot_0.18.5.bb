@@ -10,9 +10,6 @@ SRC_URI = "git://${GO_IMPORT};protocol=https;branch=master;destsuffix=${GO_SRCUR
 
 SRCREV = "9addf01e40eae111f59c822141a47aa87caf04b6"
 
-require ${BPN}-licenses.inc
-require ${BPN}-go-mods.inc
-
 LIC_FILES_CHKSUM:remove:riscv64 = "file://pkg/mod/github.com/remyoudompheng/bigfft@v0.0.0-20230129092748-24d4a6f8daec/LICENSE;md5=591778525c869cdde0ab5a1bf283cd81;spdx=BSD-3-Clause"
 
 GO_IMPORT = "github.com/simpleiot/simpleiot"
