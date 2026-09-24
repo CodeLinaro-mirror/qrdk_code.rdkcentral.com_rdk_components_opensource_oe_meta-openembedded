@@ -5,7 +5,6 @@ SECTION = "networking"
 
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/${GO_IMPORT}/LICENSE;md5=cadeae10a8856ddfdb129866b75b33e3"
-require ${BPN}-licenses.inc
 
 MAJOR_MINOR = "${@oe.utils.trim_version('${PV}', 2)}"
 SRC_URI = "git://github.com/tailscale/tailscale.git;protocol=https;branch=release-branch/${MAJOR_MINOR};destsuffix=${GO_SRCURI_DESTSUFFIX} \
@@ -14,7 +13,6 @@ SRC_URI = "git://github.com/tailscale/tailscale.git;protocol=https;branch=releas
            "
 SRCREV = "53a0d659afa51835dd7a9283873cca44261454f8"
 SRCREV_SHORT = "${@d.getVar('SRCREV')[:8]}"
-require ${BPN}-go-mods.inc
 
 GO_IMPORT = "tailscale.com"
 GO_INSTALL = "${GO_IMPORT}/cmd/tailscaled"
