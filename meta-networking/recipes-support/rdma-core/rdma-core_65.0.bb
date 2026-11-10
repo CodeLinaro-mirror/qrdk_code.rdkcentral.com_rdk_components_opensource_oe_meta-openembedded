@@ -8,6 +8,7 @@ RDEPENDS:${PN} = "bash perl"
 SRC_URI = "git://github.com/linux-rdma/rdma-core.git;branch=master;protocol=https;tag=v${PV} \
            file://0001-cmake-Allow-SYSTEMCTL_BIN-to-be-overridden-from-envi.patch \
            file://0002-mana-Link-with-libatomic-when-64-bit-atomics-need-it.patch \
+           file://0003-librdmacm-Allow-librspreload-version-script-entries-.patch \
 "
 SRCREV = "58e40801bfed5a8befc0881594820fa0a0baa4a1"
 
